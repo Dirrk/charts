@@ -28,7 +28,7 @@ spec:
           {{- end }}
         spec:
           restartPolicy: OnFailure
-          serviceAccountName: {{ template "jenkins.fullname" . }}-backup
+          serviceAccountName: {{ include "jenkins.serviceAccountBackupName" . }}
           containers:
           - name: jenkins-backup
             image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
