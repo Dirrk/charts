@@ -1,9 +1,14 @@
 {{- if .Values.backup.enabled }}
+{{ if .Values.serviceAccountBackup.create }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ template "jenkins.fullname" . }}-backup
+  name: {{ include "jenkins.serviceAccountBackupName" . }}
   namespace: {{ template "jenkins.namespace" . }}
+{{- if .Values.serviceAccountBackup.annotations }}
+  annotations:
+{{ toYaml .Values.serviceAccountBackup.annotations | indent 4 }}
+{{ end }}
   labels:
     "app.kubernetes.io/name": '{{ template "jenkins.name" .}}'
     "helm.sh/chart": "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -11,10 +16,11 @@ metadata:
     "app.kubernetes.io/instance": "{{ .Release.Name }}"
     "app.kubernetes.io/component": "{{ .Values.master.componentName }}"
 ---
+{{ end }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ template "jenkins.fullname" . }}-backup
+  name: {{ include "jenkins.serviceAccountBackupName" . }}
   namespace: {{ template "jenkins.namespace" . }}
   labels:
     "app.kubernetes.io/name": '{{ template "jenkins.name" .}}'
@@ -33,7 +39,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ template "jenkins.fullname" . }}-backup
+  name: {{ include "jenkins.serviceAccountBackupName" . }}
   namespace: {{ template "jenkins.namespace" . }}
   labels:
     "app.kubernetes.io/name": '{{ template "jenkins.name" .}}'
@@ -44,9 +50,9 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ template "jenkins.fullname" . }}-backup
+  name: {{ include "jenkins.serviceAccountBackupName" . }}
 subjects:
 - kind: ServiceAccount
-  name: {{ template "jenkins.fullname" . }}-backup
+  name: {{ include "jenkins.serviceAccountBackupName" . }}
   namespace: {{ template "jenkins.namespace" . }}
 {{- end }}
