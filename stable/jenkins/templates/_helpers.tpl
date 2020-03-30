@@ -191,3 +191,14 @@ Create the name of the service account for Jenkins agents to use
     {{ default "default" .Values.serviceAccountAgent.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the service account for Jenkins agents to use
+*/}}
+{{- define "jenkins.serviceAccountBackupName" -}}
+{{- if .Values.serviceAccountBackup.create -}}
+    {{ default (printf "%s-%s" (include "jenkins.fullname" .) "backup") .Values.serviceAccountBackup.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccountBackup.name }}
+{{- end -}}
+{{- end -}}
